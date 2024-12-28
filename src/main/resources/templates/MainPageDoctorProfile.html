@@ -120,10 +120,10 @@
                     <div class="team-text bg-light text-center p-4">
                         <h5 class="mb-2" th:text="*{name}" style="font-size: 1.1rem; font-weight: 600;"></h5>
                         <p class="text-primary mb-3" th:text="${doctorInfo.doctorInfo.specialization}" style="font-size: 0.9rem;"></p>
-                        <a style="margin-top: 15px" class="btn btn-outline-primary rounded-pill px-3 py-2"
-                           th:href="@{/index/user/explore(doctorId=*{id})}">
-                            <i class="fa fa-search me-2"></i>Explore
-                        </a>
+<!--                        <a style="margin-top: 15px" class="btn btn-outline-primary rounded-pill px-3 py-2"-->
+<!--                           th:href="@{/index/user/explore(doctorId=*{id})}">-->
+<!--                            <i class="fa fa-search me-2"></i>Explore-->
+<!--                        </a>-->
                     </div>
                 </div>
             </div>
@@ -136,13 +136,13 @@
                     <!-- Duty Date -->
                     <div class="mb-2">
                         <h5 th:text="${dutyDate.date.dayOfWeek}"></h5>
+                        <p th:text="${dutyDate.date}"></p>
                     </div>
 
                     <form  method="POST">
                         <div class="row">
                             <div class="col-6 col-md-4 mb-3" th:each="dutyTime : ${dutyDate.dutyTimes}">
-                                <input type="radio" class="btn-check" name="dutyTimeId" th:text="'dutyTime-' + ${dutyTime.dutyTime}" th:value="${dutyTime.dutyTime}">
-                                <label class="btn btn-outline-primary w-100" th:for="'dutyTime-' + ${dutyTime.dutyTime}" th:text="${dutyTime.dutyTime}"></label>
+                                <input type="radio" class="btn-check" name="dutyTimeId" th:text="${'DutyTime - ' + #temporals.format(dutyTime.dutyTime,'hh:mm a') +' to '+#temporals.format(dutyTime.offTime,'hh:mm a')}" th:value="${dutyTime.dutyTime}">
                             </div>
                         </div>
                         <input type="hidden"  th:value="${doctorInfo.id}" />
