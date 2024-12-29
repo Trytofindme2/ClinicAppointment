@@ -29,6 +29,9 @@ public interface DutyTimeRepo extends JpaRepository<DutyTime,Long>
     @Query("DELETE FROM DutyTime dt WHERE dt.dutyDate.date = :currentDate AND dt.dutyTime < :currentTime")
     void deletePastDutyTimes(@Param("currentDate") LocalDate currentDate, @Param("currentTime") LocalTime currentTime);
 
+    @Query("SELECT d FROM DutyTime d WHERE d.dutyDate.date = :dutyDate AND d.dutyDate.doctor.id = :doctorId")
+    List<DutyTime> findDutyTimesByDateAndDoctor(@Param("dutyDate") LocalDate dutyDate, @Param("doctorId") Long doctorId);
+
 
     @Modifying
     @Transactional

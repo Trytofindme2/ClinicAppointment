@@ -222,25 +222,23 @@
             doctorList.innerHTML = "";
             doctors.forEach(doctor => {
                 const doctorCard = `
-                <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.7s">
-                    <div class="team-item position-relative rounded overflow-hidden">
-                        <div class="overflow-hidden">
-                            <img class="img-fluid" th:src="@{/index/user/profilePhoto?doctorId=${doctor.id}}" alt="${doctor.name}">
-                        </div>
-                        <div class="team-text bg-light text-center p-4">
-                            <h5>${doctor.name}</h5>
-                            <p class="text-primary">${doctor.specialization}</p>
-                            <div class="team-social text-center">
+                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
+                        <div class="team-item position-relative rounded overflow-hidden shadow-sm">
+                            <div class="overflow-hidden">
+                                <img class="img-fluid fixed-img" src="/index/user/profilePhoto?doctorId=${doctor.id}" alt="" style="width: 100%; height: 300px; object-fit: cover;">
+                            </div>
+                            <div class="team-text bg-light text-center p-4">
+                                <h5 class="mb-2" style="font-size: 1.1rem; font-weight: 600;">${doctor.name}</h5>
+                                <p class="text-primary mb-3" style="font-size: 0.9rem;">${doctor.doctorInfo.specialization}</p>
                                 <a style="margin-top: 15px" class="btn btn-outline-primary rounded-pill px-3 py-2"
-                           href="/index/user/explore(doctorId=${doctor.id})}">
+                           href="/index/user/explore?doctorId=${doctor.id}">
                             <i class="fa fa-search me-2"></i>Explore
                         </a>
                             </div>
                         </div>
                     </div>
-                </div>
-            `;
-                doctorList.innerHTML += doctorCard;
+                `;
+                doctorContainer.innerHTML += doctorCard;
             });
         } catch (error) {
             console.error("Error loading doctors:", error);
@@ -275,7 +273,7 @@
                                 <h5 class="mb-2" style="font-size: 1.1rem; font-weight: 600;">${doctor.name}</h5>
                                 <p class="text-primary mb-3" style="font-size: 0.9rem;">${doctor.doctorInfo.specialization}</p>
                                 <a style="margin-top: 15px" class="btn btn-outline-primary rounded-pill px-3 py-2"
-                           href="/index/user/explore(doctorId=${doctor.id})}">
+                           href="/index/user/explore?doctorId=${doctor.id}">
                             <i class="fa fa-search me-2"></i>Explore
                         </a>
                             </div>
@@ -311,7 +309,7 @@
                     doctorContainer.innerHTML = "<p class='text-center'>No doctors found for this date.</p>";
                 } else {
                     doctors.forEach(doctor => {
-                        const doctorCard = `
+                        const doctorCard =`
                     <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
                         <div class="team-item position-relative rounded overflow-hidden shadow-sm">
                             <div class="overflow-hidden">
@@ -321,7 +319,7 @@
                                 <h5 class="mb-2" style="font-size: 1.1rem; font-weight: 600;">${doctor.name}</h5>
                                 <p class="text-primary mb-3" style="font-size: 0.9rem;">${doctor.doctorInfo.specialization}</p>
                                 <a style="margin-top: 15px" class="btn btn-outline-primary rounded-pill px-3 py-2"
-                           href="/index/user/explore(doctorId=${doctor.id})}">
+                           href="/index/user/explore?doctorId=${doctor.id}">
                             <i class="fa fa-search me-2"></i>Explore
                         </a>
                             </div>

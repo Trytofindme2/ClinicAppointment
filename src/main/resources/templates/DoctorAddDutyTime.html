@@ -325,21 +325,11 @@
 
 <script>
     document.getElementById('duty-time-form').addEventListener('submit', function (event) {
-        const dutyTime = document.getElementById('dutyTime').value;
-        const offTime = document.getElementById('offTime').value;
-        const now = new Date();
-        const currentTime = now.toTimeString().slice(0, 5);
         const errorMessageDiv = document.getElementById('error-message');
         errorMessageDiv.textContent = '';
-        if (dutyTime < currentTime) {
-            event.preventDefault();
-            errorMessageDiv.textContent = "Duty time cannot be Less than the current time.";
-            errorMessageDiv.style.display = "inline-block";
-            setTimeout(() => {
-                errorMessageDiv.style.display = "none";
-            }, 2000);
-        }
+        errorMessageDiv.style.display = "none";
     });
+
 </script>
 
 

@@ -4,21 +4,23 @@ import jakarta.servlet.http.HttpSession;
 import org.example.unit22_project.Model.*;
 import org.example.unit22_project.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.print.Doc;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Controller
 @RequestMapping("/index/user")
-public class PatientController
-{
+public class PatientController {
     private final PatientService patientService;
 
     private final DoctorService doctorService;
@@ -29,29 +31,33 @@ public class PatientController
 
     private final DutyTimeService dutyTimeService;
 
+    private final AppointmentService appointmentService;
+
 
     @Autowired
     public PatientController(PatientService patientService,
                              DoctorService doctorService,
                              DoctorInfoService doctorInfoService,
                              DutyDateService dutyDateService,
-                             DutyTimeService dutyTimeService){
+                             DutyTimeService dutyTimeService,
+                             AppointmentService appointmentService) {
         this.patientService = patientService;
         this.doctorInfoService = doctorInfoService;
         this.doctorService = doctorService;
         this.dutyDateService = dutyDateService;
         this.dutyTimeService = dutyTimeService;
+        this.appointmentService = appointmentService;
     }
 
     @GetMapping("/SignUp")
-    public String getUserSignInPage(Model model){
-        model.addAttribute("newUser",new Patient());
+    public String getUserSignInPage(Model model) {
+        model.addAttribute("newUser", new Patient());
         return "UserSignUp";
     }
 
     @PostMapping("/SignUpProcess")
-    public String SignUpUserInfo(@ModelAttribute("newUser")Patient patient,Model model){
-        if (patientService.findExitedUser(patient.getEmail())){
+    public String SignUpUserInfo(@ModelAttribute("newUser") Patient patient, Model model) {
+        if (patientService.findExitedUser(patient.getEmail())) {
             model.addAttribute("errorMessage", "Email already exists !");
             return "UserSignUp";
         }
@@ -69,54 +75,49 @@ public class PatientController
     }
 
     @GetMapping("/SignIn")
-    public String getUserSignIn(){
+    public String getUserSignIn() {
         return "UserSignIn";
     }
 
     @PostMapping("/SignInProcess")
-    public String userSignInProcess(@RequestParam("email")String email,
-                                    @RequestParam("password")String password,
-                                    Model model,HttpSession httpSession)
-    {
+    public String userSignInProcess(@RequestParam("email") String email,
+                                    @RequestParam("password") String password,
+                                    Model model, HttpSession httpSession) {
         String errorMessage = patientService.UserLogInProcess(email, password);
         if (errorMessage != null) {
             model.addAttribute("errorMessage", errorMessage);
             return "UserSignIn";
         }
-        httpSession.setAttribute("userId",patientService.findPatientByEmail(email).getId());
+        httpSession.setAttribute("userId", patientService.findPatientByEmail(email).getId());
         return "redirect:/index/user/CityStar";
     }
 
     @GetMapping("/CityStar")
-    public String getMainPage(Model model, HttpSession httpsession)
-    {
+    public String getMainPage(Model model, HttpSession httpsession) {
         Long userId = (Long) httpsession.getAttribute("userId");
-        if(userId != null){
-            model.addAttribute("isLogin",true);
-            System.out.println("User id is"+ userId);
-        }
-        else {
-            model.addAttribute("isLogin",false);
+        if (userId != null) {
+            model.addAttribute("isLogin", true);
+            System.out.println("User id is" + userId);
+        } else {
+            model.addAttribute("isLogin", false);
         }
         return "MainPage";
     }
 
     @GetMapping("/AboutUs")
-    public String getAboutUsPage(Model model,HttpSession httpSession){
+    public String getAboutUsPage(Model model, HttpSession httpSession) {
         Long userId = (Long) httpSession.getAttribute("userId");
-        if(userId != null){
-            model.addAttribute("isLogin",true);
-        }
-        else{
-            model.addAttribute("isLogin",false);
+        if (userId != null) {
+            model.addAttribute("isLogin", true);
+        } else {
+            model.addAttribute("isLogin", false);
         }
         return "AboutUs";
     }
 
     @GetMapping("/SignOut")
-    public String userSignOut(HttpSession httpSession)
-    {
-        httpSession.setAttribute("userId",null);
+    public String userSignOut(HttpSession httpSession) {
+        httpSession.setAttribute("userId", null);
         return "redirect:/index/user/CityStar";
     }
 
@@ -155,28 +156,72 @@ public class PatientController
 
     @GetMapping("/profilePhoto")
     @ResponseBody
-    public ResponseEntity<byte[]> getProfilePhoto(@RequestParam("doctorId")Long doctorId)
-    {
+    public ResponseEntity<byte[]> getProfilePhoto(@RequestParam("doctorId") Long doctorId) {
         DoctorInfo doctorInfo = doctorInfoService.findDoctorInfoByDoctorId(doctorId).get();
         byte[] image = doctorInfo.getProfilePhoto();
         return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
     }
 
+    @GetMapping("/getDutyTimes")
+    @ResponseBody
+    public List<DutyTimeDTO> getDutyTimesByDate(
+            @RequestParam("doctorId") Long doctorId,
+            @RequestParam("dutyDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate dutyDate) {
+        return dutyTimeService.getDutyTimes(dutyDate, doctorId);
+    }
+
     @GetMapping("/explore")
     public String exploreDoctorPage(HttpSession httpSession,
-                                    @RequestParam("doctorId")Long doctorId,
-                                    Model model){
+                                    @RequestParam("doctorId") Long doctorId,
+                                    Model model) {
         Long userId = (Long) httpSession.getAttribute("userId");
-        if(userId != null){
-            model.addAttribute("isLogin",true);
-        }
-        else {
-            model.addAttribute("isLogin",false);
+        if (userId != null) {
+            model.addAttribute("isLogin", true);
+            model.addAttribute("userId",userId);
+        } else {
+            model.addAttribute("isLogin", false);
         }
         Doctor doctor = doctorService.findDoctorById(doctorId);
-        model.addAttribute("doctorInfo",doctor);
+        model.addAttribute("doctorInfo", doctor);
         List<DutyDate> dutyDates = dutyDateService.showAllDutyDateByDoctorId(doctorId);
-        model.addAttribute("Dates",dutyDates);
+        model.addAttribute("Dates", dutyDates);
+        return "MainPageDoctorProfile";
+    }
+
+    @GetMapping("/getAllAppointment")
+    @ResponseBody
+    public List<Appointment>getAllApppointment(){
+        return appointmentService.getAllAppointment();
+    }
+
+
+    @PostMapping("/bookedAppointment")
+    public String bookedAppointmentProcess(@RequestParam("doctorId") Long doctorId,
+                                           @RequestParam("appointmentDate") LocalDate appointmentDate,
+                                           @RequestParam("appointmentTime") LocalTime appointmentTime,
+                                           HttpSession httpSession,
+                                           Model model) {
+
+        Long userId = (Long) httpSession.getAttribute("userId");
+        String returnMessage = "";
+        if (userId != null) {
+            boolean isAvailable = appointmentService.isAppointmentSlotAvailable(doctorId, appointmentDate, appointmentTime);
+            model.addAttribute("isLogin",true);
+            if (!isAvailable) {
+                returnMessage = "The selected time slot is unavailable. Please choose another.";
+            } else {
+                String message = appointmentService.SaveAppointment(doctorId, userId, appointmentDate, appointmentTime);
+                returnMessage = message;
+                System.out.println(message);
+            }
+        } else {
+            model.addAttribute("isLogin",false);
+            returnMessage = "You need to log in to book an appointment.";
+        }
+        model.addAttribute("returnMessage", returnMessage);
+        model.addAttribute("doctorInfo",doctorService.findDoctorById(doctorId));
+        List<DutyDate> dutyDates = dutyDateService.showAllDutyDateByDoctorId(doctorId);
+        model.addAttribute("Dates", dutyDates);
         return "MainPageDoctorProfile";
     }
 
@@ -184,5 +229,11 @@ public class PatientController
 
 
 
-
 }
+
+
+
+
+
+
+

@@ -1,5 +1,7 @@
 package org.example.unit22_project.Model;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -7,6 +9,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Entity
+
 public class DutyTime
 {
     @Id
