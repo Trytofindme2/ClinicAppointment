@@ -188,12 +188,9 @@
                         Select a Date and Time
                     </button>
 
-                    <div style="margin-top: 25px">
-                        <div th:if="${returnMessage}" class="alert alert-info">
-                            <span th:text="${returnMessage}"></span>
-                        </div>
+                    <div th:if="${param.returnMessage != null}" class="alert alert-info" id="alert-message" style="margin-top: 25px">
+                        <span th:text="${param.returnMessage}"></span>
                     </div>
-
                 </form>
             </div>
         </div>
@@ -261,6 +258,23 @@
 
 
 <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const alertMessage = document.getElementById("alert-message");
+        if (alertMessage) {
+            // Hide the message after 3.5 seconds
+            setTimeout(function () {
+                alertMessage.style.display = "none";
+
+                // Remove the returnMessage from the URL
+                const url = new URL(window.location.href);
+                url.searchParams.delete("returnMessage");
+                window.history.replaceState({}, document.title, url);
+            }, 3500);
+        }
+    });
+</script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -339,7 +353,6 @@
                     }
                 });
             } else {
-                // Re-enable all checkboxes and reset background colors
                 checkboxes.forEach(checkbox => {
                     const parentLabel = checkbox.parentElement;
                     checkbox.disabled = false;

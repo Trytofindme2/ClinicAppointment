@@ -19,18 +19,24 @@ public class Appointment
 
     private Long userId;
 
+    private LocalDate submitDate;
+
     private LocalDate appointmentDate;
 
     private LocalTime appointmentTime;
 
+    private boolean permission;
+
     public Appointment(){}
 
-    public Appointment(Long id, Long doctorId, Long userId, LocalDate appointmentDate, LocalTime appointmentTime) {
+    public Appointment(Long id, Long doctorId, Long userId, LocalDate appointmentDate, LocalTime appointmentTime, boolean permission, LocalDate submitDate) {
         this.id = id;
         this.doctorId = doctorId;
         this.userId = userId;
         this.appointmentDate = appointmentDate;
         this.appointmentTime = appointmentTime;
+        this.permission = permission;
+        this.submitDate = submitDate;
     }
 
     public Long getId() {
@@ -73,5 +79,19 @@ public class Appointment
         this.appointmentTime = appointmentTime;
     }
 
+    public boolean isPermission() {
+        return permission;
+    }
 
+    public void setPermission(boolean permission) {
+        this.permission = permission;
+    }
+
+    public LocalDate getSubmitDate() {
+        return submitDate;
+    }
+
+    public void setSubmitDate(LocalDate submitDate) {
+        this.submitDate = submitDate;
+    }
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Repository
 public interface AppointmentRepo extends JpaRepository<Appointment,Long>
@@ -19,4 +20,7 @@ public interface AppointmentRepo extends JpaRepository<Appointment,Long>
             @Param("appointmentDate") LocalDate appointmentDate,
             @Param("appointmentTime") LocalTime appointmentTime
     );
+
+
+
 }

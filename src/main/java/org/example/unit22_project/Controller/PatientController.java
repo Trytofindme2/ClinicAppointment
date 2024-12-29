@@ -199,30 +199,23 @@ public class PatientController {
     public String bookedAppointmentProcess(@RequestParam("doctorId") Long doctorId,
                                            @RequestParam("appointmentDate") LocalDate appointmentDate,
                                            @RequestParam("appointmentTime") LocalTime appointmentTime,
-                                           HttpSession httpSession,
-                                           Model model) {
+                                           HttpSession httpSession) {
 
         Long userId = (Long) httpSession.getAttribute("userId");
-        String returnMessage = "";
+        String returnMessage;
+
         if (userId != null) {
             boolean isAvailable = appointmentService.isAppointmentSlotAvailable(doctorId, appointmentDate, appointmentTime);
-            model.addAttribute("isLogin",true);
             if (!isAvailable) {
-                returnMessage = "The selected time slot is unavailable. Please choose another.";
+                returnMessage = "The Selected Time Slot is Unavailable for An Appointment. Please Choose Another.";
             } else {
-                String message = appointmentService.SaveAppointment(doctorId, userId, appointmentDate, appointmentTime);
-                returnMessage = message;
-                System.out.println(message);
+                returnMessage = appointmentService.SaveAppointment(doctorId, userId, appointmentDate, appointmentTime);
+
             }
         } else {
-            model.addAttribute("isLogin",false);
             returnMessage = "You need to log in to book an appointment.";
         }
-        model.addAttribute("returnMessage", returnMessage);
-        model.addAttribute("doctorInfo",doctorService.findDoctorById(doctorId));
-        List<DutyDate> dutyDates = dutyDateService.showAllDutyDateByDoctorId(doctorId);
-        model.addAttribute("Dates", dutyDates);
-        return "MainPageDoctorProfile";
+        return "redirect:/index/user/explore?doctorId=" + doctorId + "&returnMessage=" + returnMessage;
     }
 
 

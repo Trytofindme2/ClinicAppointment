@@ -121,7 +121,7 @@
                 <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Account pages</h6>
             </li>
             <li class="nav-item">
-                <a class="nav-link">
+                <a class="nav-link " th:href="@{/index/admin/ManageAppointment}">
                     <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
                         <svg width="12px" height="12px" viewBox="0 0 46 42" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                             <title>customer-support</title>
@@ -138,7 +138,7 @@
                             </g>
                         </svg>
                     </div>
-                    <span class="nav-link-text ms-1">Profile</span>
+                    <span class="nav-link-text ms-1">Appointment</span>
                 </a>
             </li>
         </ul>
@@ -259,8 +259,8 @@
                         <div class="row">
                             <div class="col-8">
                                 <div class="numbers">
-                                    <p class="text-sm mb-0 text-capitalize font-weight-bold">Total Appointment</p>
-                                    <h5 class="font-weight-bolder mb-0" th:class="count" style="margin-top: 10px;font-size: small"></h5>
+                                    <p class="text-sm mb-0 text-capitalize font-weight-bold">Appointment</p>
+                                    <h5 class="font-weight-bolder mb-0" th:class="count" style="margin-top: 10px;font-size: small" th:text="'Total ' + ${appointmentCount}"></h5>
                                 </div>
                             </div>
                             <div class="col-4 text-end">

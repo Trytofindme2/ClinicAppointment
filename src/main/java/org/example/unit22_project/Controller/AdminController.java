@@ -1,14 +1,10 @@
 package org.example.unit22_project.Controller;
 
 import jakarta.servlet.http.HttpSession;
-import org.example.unit22_project.Model.Admin;
-import org.example.unit22_project.Model.Doctor;
-import org.example.unit22_project.Model.DoctorInfo;
-import org.example.unit22_project.Service.AdminService;
-import org.example.unit22_project.Service.DoctorInfoService;
-import org.example.unit22_project.Service.DoctorService;
-import org.example.unit22_project.Service.PatientService;
+import org.example.unit22_project.Model.*;
+import org.example.unit22_project.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -32,15 +28,19 @@ public class AdminController
 
     private  final PatientService patientService;
 
+    private final AppointmentService appointmentService;
+
     @Autowired
     public AdminController(AdminService adminService,
                            PatientService patientService,
                            DoctorService doctorService,
+                           AppointmentService appointmentService,
                            DoctorInfoService doctorInfoService){
         this.adminService = adminService;
         this.patientService = patientService;
         this.doctorService =doctorService;
         this.doctorInfoService = doctorInfoService;
+        this.appointmentService=appointmentService;
     }
 
     //get the admin dashboard
@@ -55,6 +55,7 @@ public class AdminController
             model.addAttribute("isLogin", true);
             model.addAttribute("userCount",patientService.getUserCount());
             model.addAttribute("doctorCount",doctorService.getDoctorCount());
+            model.addAttribute("appointmentCount",appointmentService.getTotalAppointment());
             model.addAttribute("unverifiedDoctorCount",doctorService.getDoctorCountByStatus());
             model.addAttribute("unverifiedUserCount",patientService.getUnverifiedUserCount());
         } else {
@@ -318,6 +319,22 @@ public class AdminController
     {
         doctorInfoService.deleteDoctorInfoById(doctorId);
         return "redirect:/index/admin/showAllDoctor";
+    }
+
+    @GetMapping("/ManageAppointment")
+    public String getManageAppointmentPage(HttpSession httpSession, Model model) {
+        Long adminId = (Long) httpSession.getAttribute("id");
+        if (adminId != null) {
+            model.addAttribute("isLogin", true);
+            Admin admin = adminService.findAdminById(adminId);
+            model.addAttribute("admin", admin);
+
+            List<AppointmentDTO> appointmentDTOList = appointmentService.getAllAppointmentsWithNames();
+            model.addAttribute("appointmentList", appointmentDTOList);
+        } else {
+            model.addAttribute("isLogin", false);
+        }
+        return "AdminManageAppointment";
     }
 
 
