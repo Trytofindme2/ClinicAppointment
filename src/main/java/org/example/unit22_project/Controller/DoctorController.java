@@ -5,10 +5,7 @@ import org.example.unit22_project.Model.Doctor;
 import org.example.unit22_project.Model.DoctorInfo;
 import org.example.unit22_project.Model.DutyDate;
 import org.example.unit22_project.Model.DutyTime;
-import org.example.unit22_project.Service.DoctorInfoService;
-import org.example.unit22_project.Service.DoctorService;
-import org.example.unit22_project.Service.DutyDateService;
-import org.example.unit22_project.Service.DutyTimeService;
+import org.example.unit22_project.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,15 +30,19 @@ public class DoctorController
 
     private final DutyTimeService dutyTimeService;
 
+    private final AppointmentService appointmentService;
+
     @Autowired
     public DoctorController(DoctorService doctorService,
                             DoctorInfoService doctorInfoService,
                             DutyDateService dutyDateService,
-                            DutyTimeService dutyTimeService){
+                            DutyTimeService dutyTimeService,
+                            AppointmentService appointmentService){
         this.doctorService = doctorService;
         this.doctorInfoService = doctorInfoService;
         this.dutyDateService = dutyDateService;
         this.dutyTimeService = dutyTimeService;
+        ;this.appointmentService = appointmentService;
     }
 
     @GetMapping("/SignUp")
@@ -87,7 +88,7 @@ public class DoctorController
         }
         Doctor doctor = doctorService.findDoctorWithEmail(email);
         httpSession.setAttribute("doctorId",doctor.getId());
-        return "DoctorDashBoard";
+        return "redirect:/index/doctor/DashBoard";
     }
 
     @GetMapping("/DashBoard")
@@ -99,11 +100,27 @@ public class DoctorController
             Doctor doctor = doctorService.findDoctorById(doctorId);
             model.addAttribute("isLogIn",true);
             model.addAttribute("doctor",doctor);
+            model.addAttribute("totalAppointmentCount",doctorService.getAppointmentCountByDoctorId(doctorId));
+            model.addAttribute("waitedAppointmentCount",doctorService.getAppointmentCountByStatusAndId("pending",doctorId));
+            model.addAttribute("appointmentList",appointmentService.getAppointmentListByDoctorIdAndStatus(doctorId));
         }
         else {
             model.addAttribute("isLogIn",false);
         }
         return "DoctorDashBoard";
+    }
+
+    @GetMapping("/changeAppointmentStatusCheckOut")
+    public String changeAppointmentStatus(@RequestParam("appointmentId")Long appointmentId)
+    {
+        appointmentService.changeAppointmentStatus(appointmentId);
+        return "redirect:/index/doctor/DashBoard";
+    }
+
+    @GetMapping("/changeAppointmentStatusAccept")
+    public String changeAppointmentStatusAccpet(@RequestParam("appointmentId")Long appointmentId){
+        appointmentService.changeAppointmentStatusAccept(appointmentId);
+        return "redirect:/index/doctor/DashBoard";
     }
 
     @GetMapping("/DoctorLogOut")

@@ -1,9 +1,8 @@
 package org.example.unit22_project.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
+
+import java.util.List;
 
 @Entity
 public class Patient
@@ -19,6 +18,9 @@ public class Patient
 
     private String address;
     private boolean verified;
+
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Appointment> appointments;
 
     public Patient(){}
 

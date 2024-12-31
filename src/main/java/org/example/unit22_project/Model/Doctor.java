@@ -1,5 +1,6 @@
 package org.example.unit22_project.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -26,20 +27,26 @@ public class Doctor
     private DoctorInfo doctorInfo;
 
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private List<DutyDate> dutyDates;
+
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Appointment> appointments;
 
     public Doctor(){}
 
-    public Doctor(Long id, String name, String email, String password, String reEnterPassword, String phoneNumber, String gender, DoctorInfo doctorInfo ,
-                  boolean verified) {
+    public Doctor(Long id, String name, String email, String password, String reEnterPassword, String gender, boolean verified, DoctorInfo doctorInfo, List<DutyDate> dutyDates, List<Appointment> appointments) {
         this.id = id;
         this.name = name;
         this.email = email;
         this.password = password;
         this.reEnterPassword = reEnterPassword;
         this.gender = gender;
+        this.verified = verified;
         this.doctorInfo = doctorInfo;
-        this.verified = false;
+        this.dutyDates = dutyDates;
+        this.appointments = appointments;
     }
 
     public Long getId() {
@@ -104,5 +111,21 @@ public class Doctor
 
     public boolean isVerified() {
         return verified;
+    }
+
+    public List<DutyDate> getDutyDates() {
+        return dutyDates;
+    }
+
+    public void setDutyDates(List<DutyDate> dutyDates) {
+        this.dutyDates = dutyDates;
+    }
+
+    public List<Appointment> getAppointments() {
+        return appointments;
+    }
+
+    public void setAppointments(List<Appointment> appointments) {
+        this.appointments = appointments;
     }
 }

@@ -322,20 +322,31 @@ public class AdminController
     }
 
     @GetMapping("/ManageAppointment")
-    public String getManageAppointmentPage(HttpSession httpSession, Model model) {
+    public String getAppointmentManagementPage(HttpSession httpSession,Model model){
         Long adminId = (Long) httpSession.getAttribute("id");
-        if (adminId != null) {
-            model.addAttribute("isLogin", true);
-            Admin admin = adminService.findAdminById(adminId);
-            model.addAttribute("admin", admin);
-
-            List<AppointmentDTO> appointmentDTOList = appointmentService.getAllAppointmentsWithNames();
-            model.addAttribute("appointmentList", appointmentDTOList);
-        } else {
-            model.addAttribute("isLogin", false);
+        if(adminId != null){
+            model.addAttribute("isLogin",true);
+            model.addAttribute("admin",adminService.findAdminById(adminId));
+            model.addAttribute("appointmentList",appointmentService.getAllAppointment());
+        }
+        else {
+            model.addAttribute("isLogin",false);
         }
         return "AdminManageAppointment";
     }
+
+    @GetMapping("/searchAppointment")
+    @ResponseBody
+    public List<Appointment> searchAppointments(
+            @RequestParam(required = false) String searchQuery) {
+        if (searchQuery == null || searchQuery.isEmpty()) {
+            return appointmentService.getAllAppointment();
+        } else {
+            return appointmentService.searchAppointments(searchQuery);
+        }
+    }
+
+
 
 
 

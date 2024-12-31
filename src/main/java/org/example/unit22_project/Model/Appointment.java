@@ -1,9 +1,6 @@
 package org.example.unit22_project.Model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -12,12 +9,17 @@ import java.time.LocalTime;
 public class Appointment
 {
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO)
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
 
-    private Long doctorId;
+    @ManyToOne
+    @JoinColumn(name = "doctor_id", nullable = false)
+    private Doctor doctor;
 
-    private Long userId;
+    @ManyToOne
+    @JoinColumn(name = "patient_id", nullable = false)
+    private Patient patient;
+
 
     private LocalDate submitDate;
 
@@ -25,18 +27,29 @@ public class Appointment
 
     private LocalTime appointmentTime;
 
-    private boolean permission;
+    private String status;
 
-    public Appointment(){}
+    private String appointmentTicket;
 
-    public Appointment(Long id, Long doctorId, Long userId, LocalDate appointmentDate, LocalTime appointmentTime, boolean permission, LocalDate submitDate) {
+    public Appointment(Long id, Doctor doctor,
+                       Patient patient,
+                       LocalDate submitDate,
+                       LocalDate appointmentDate,
+                       LocalTime appointmentTime,
+                       String appointmentTicket,
+                       String status) {
         this.id = id;
-        this.doctorId = doctorId;
-        this.userId = userId;
+        this.doctor = doctor;
+        this.patient = patient;
+        this.submitDate = submitDate;
         this.appointmentDate = appointmentDate;
         this.appointmentTime = appointmentTime;
-        this.permission = permission;
-        this.submitDate = submitDate;
+        this.status = status;
+        this.appointmentTicket = appointmentTicket;
+    }
+
+    public Appointment() {
+
     }
 
     public Long getId() {
@@ -47,20 +60,20 @@ public class Appointment
         this.id = id;
     }
 
-    public Long getDoctorId() {
-        return doctorId;
+    public Doctor getDoctor() {
+        return doctor;
     }
 
-    public void setDoctorId(Long doctorId) {
-        this.doctorId = doctorId;
+    public void setDoctor(Doctor doctor) {
+        this.doctor = doctor;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Patient getPatient() {
+        return patient;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setPatient(Patient patient) {
+        this.patient = patient;
     }
 
     public LocalDate getAppointmentDate() {
@@ -79,12 +92,12 @@ public class Appointment
         this.appointmentTime = appointmentTime;
     }
 
-    public boolean isPermission() {
-        return permission;
+    public String getStatus() {
+        return status;
     }
 
-    public void setPermission(boolean permission) {
-        this.permission = permission;
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public LocalDate getSubmitDate() {
@@ -93,5 +106,13 @@ public class Appointment
 
     public void setSubmitDate(LocalDate submitDate) {
         this.submitDate = submitDate;
+    }
+
+    public String getAppointmentTicket() {
+        return appointmentTicket;
+    }
+
+    public void setAppointmentTicket(String appointmentTicket) {
+        this.appointmentTicket = appointmentTicket;
     }
 }

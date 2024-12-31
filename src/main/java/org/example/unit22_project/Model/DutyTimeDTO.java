@@ -6,13 +6,10 @@ public class DutyTimeDTO {
     private LocalTime dutyTime;
     private LocalTime offTime;
 
-    // Constructor
     public DutyTimeDTO(LocalTime dutyTime, LocalTime offTime) {
         this.dutyTime = dutyTime;
         this.offTime = offTime;
     }
-
-    // Getters and Setters
     public LocalTime getDutyTime() {
         return dutyTime;
     }

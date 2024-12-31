@@ -2,6 +2,7 @@ package org.example.unit22_project.Service;
 
 import org.example.unit22_project.Model.Doctor;
 import org.example.unit22_project.Model.DutyDate;
+import org.example.unit22_project.Repository.AppointmentRepo;
 import org.example.unit22_project.Repository.DoctorRepo;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -22,10 +23,14 @@ public class DoctorService
 {
     private final DoctorRepo doctorRepo;
 
+    private final AppointmentRepo appointmentRepo;
+
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    public DoctorService(DoctorRepo doctorRepo){
+    public DoctorService(DoctorRepo doctorRepo,
+                         AppointmentRepo appointmentRepo){
         this.doctorRepo = doctorRepo;
+        this.appointmentRepo = appointmentRepo;
     }
 
     //check the password match
@@ -163,6 +168,16 @@ public class DoctorService
         List<Doctor> doctors = doctorRepo.findDoctorByDutyDates(LocalDate.of(2024, 12, 23));
         System.out.println(doctors);
         return doctorRepo.findDoctorByDutyDates(date);
+    }
+
+    public Long getAppointmentCountByDoctorId(Long doctorId) {
+        Long count = appointmentRepo.countByDoctorId(doctorId);
+        return count != null ? count : 0L;
+    }
+
+    public Long getAppointmentCountByStatusAndId(String status,Long doctorId) {
+        Long count = appointmentRepo.countByStatusAndDoctorId("Pending",doctorId);
+        return count != null ? count : 0L;
     }
 
 

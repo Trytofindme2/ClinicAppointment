@@ -218,6 +218,25 @@ public class PatientController {
         return "redirect:/index/user/explore?doctorId=" + doctorId + "&returnMessage=" + returnMessage;
     }
 
+    @GetMapping("/History")
+    public String getHistory(Model model,HttpSession httpSession){
+        Long userId = (Long) httpSession.getAttribute("userId");
+        if(userId!=null){
+            model.addAttribute("isLogin", true);
+            List<Appointment> appointmentList = appointmentService.getAppointmentByPatientId(userId);
+            if(appointmentList != null){
+                model.addAttribute("appointmentHistoryList",appointmentList);
+            }
+//            else {
+//                model.addAttribute("appointmentHistoryList","No History To Show");
+//            }
+        }
+        else {
+            model.addAttribute("isLogin", false);
+        }
+        return "MainPageHistory";
+    }
+
 
 
 

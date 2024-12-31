@@ -18,91 +18,82 @@
 </head>
 
 <style>
-    /* Custom Search Bar Styles */
-    .search-container {
-        width: 100%;
+
+    .search-section {
         display: flex;
-        justify-content: center; /* Center the search bar */
+        width: 350px;
+        margin-left: 20%;
+        justify-content: center;
         align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
     }
 
-    .custom-input {
-        width: 250px;
-        padding: 6px 10px; /* Reduced height */
+    .search-input {
+        padding: 10px 15px;
         font-size: 14px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
+        border: 1px solid #ddd;
+        width: 220px;
+        height: 40px;
+        transition: border 0.3s ease-in-out;
     }
 
-    .custom-btn {
-        padding: 6px 12px;
+    .search-input:focus {
+        border-color: #007bff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        outline: none;
+    }
+
+    .search-button {
+        padding: 10px 15px;
         font-size: 14px;
-        border-radius: 5px;
-        border: 1px solid #007bff;
-        margin-top: 15px;
+        border-radius: 25px;
         background-color: #007bff;
         color: white;
-        transition: background-color 0.3s ease;
+        border: none;
+        height: 40px;
+        transition: background-color 0.3s ease-in-out;
+        width: 100px;
     }
 
-    /* Table Styles */
-    .custom-table {
-        max-height: 400px;
-        overflow-y: auto;
-        margin-top: 20px;
+    .search-button:hover {
+        background-color: #0056b3;
+        cursor: pointer;
     }
+
+    .search-button:focus {
+        outline: none;
+    }
+
 
     .table th, .table td {
-        text-align: center;
-        vertical-align: middle;
-        padding: 8px;
-    }
-
-    /* Responsive Table */
-    .table-responsive {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+        text-align: left;
+        padding: 12px;
     }
 
     .table th {
         background-color: #f8f9fa;
-        color: #495057;
+        font-weight: 600;
+    }
+    .table tbody tr {
+        transition: background-color 0.3s ease-in-out;
     }
 
-    .table tbody tr:nth-child(even) {
-        background-color: #f9f9f9;
-    }
-
-    .table tbody tr:nth-child(odd) {
-        background-color: #ffffff;
-    }
-
-    /* Hover effect on table rows */
     .table tbody tr:hover {
         background-color: #f1f1f1;
     }
-
-    /* Custom Styling for Table Cells */
-    .table td {
-        font-size: 14px;
-        font-weight: 500;
+    .custom-table {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
     }
 
-    .table th {
-        font-size: 15px;
-        font-weight: 600;
+    .table-responsive {
+        max-height: 400px;
+        overflow-y: auto;
     }
-
-    /* Search Bar and Button Alignment */
-    .d-flex {
-        display: flex;
-    }
-
-    .ms-2 {
-        margin-left: 10px;
-    }
-
 </style>
+
 <body class="g-sidenav-show  bg-gray-100">
 <aside class="sidenav navbar navbar-vertical navbar-expand-xs border-0 border-radius-xl my-3 fixed-start ms-3 " id="sidenav-main">
     <div class="sidenav-header">
@@ -277,31 +268,47 @@
         </div>
     </nav>
 
+
     <div class="card-body px-0 pb-2">
-        <div class="search-container d-flex justify-content-center mb-3">
-            <div class="d-flex align-items-center">
-                <input type="text" class="form-control custom-input" id="searchInput" placeholder="Search by Doctor or Patient Name">
-                <button class="btn btn-primary custom-btn ms-2" id="searchBtn">Search</button>
+
+        <div class="search-section">
+            <div class="input-group">
+                <input type="text" id="searchQuery" class="form-control search-input" placeholder="Enter Doctor or Patient Name">
+                <button onclick="searchAppointments()" class="btn btn-primary search-button">Search</button>
             </div>
         </div>
 
         <div class="table-responsive custom-table" style="max-height: 400px; overflow-y: auto;">
             <table class="table align-items-center mb-0">
                 <thead>
-                    <tr>
-                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Id</th>
-                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Doctor Name</th>
-                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Patient Name</th>
-                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Appointment Date</th>
-                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Appointment Time</th>
-                    </tr>
+                <tr>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Id</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Doctor Name</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Patient Name</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Appointment Date</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Appointment Time</th>
+                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Submit Date</th>
+                </tr>
                 </thead>
                 <tbody id="appointmentTableBody">
-
+                    <tr th:each="appointment : ${appointmentList}">
+                        <td th:text="${appointment.id}"></td>
+                        <td th:text="${appointment.doctor.name}"></td>
+                        <td th:text="${appointment.patient.name}"></td>
+                        <td th:text="${appointment.appointmentDate}"></td>
+                        <td th:text="${#temporals.format(appointment.appointmentTime, 'hh:mm a')}"></td>
+                        <td th:text="${appointment.submitDate}"></td>
+                        <td>
+                            <a href="/send-ticket" class="btn btn-primary btn-sm" style="text-transform: uppercase; font-weight: bold; margin-top: 5px">
+                                Send Ticket
+                            </a>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
+
 
 </main>
 
@@ -319,6 +326,50 @@
         }
         Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
     }
+</script>
+
+<script>
+    function searchAppointments() {
+        const searchQuery = document.getElementById("searchQuery").value || null;
+
+        fetch(`/index/admin/searchAppointment?searchQuery=${searchQuery}`)
+            .then(response => response.json())
+            .then(appointments => {
+                updateTable(appointments);
+            })
+            .catch(error => {
+                console.error("Error fetching appointments:", error);
+            });
+    }
+
+    function updateTable(appointments) {
+        const tableBody = document.getElementById("appointmentTableBody");
+        tableBody.innerHTML = "";
+
+        if (appointments.length === 0) {
+            tableBody.innerHTML = "<tr><td colspan='7' class='text-center'>No appointments found.</td></tr>";
+        } else {
+            appointments.forEach(appointment => {
+                const row = `
+                <tr>
+                    <td>${appointment.id}</td>
+                    <td>${appointment.doctor.name}</td>
+                    <td>${appointment.patient.name}</td>
+                    <td>${appointment.appointmentDate}</td>
+                    <td>${appointment.appointmentTime}</td>
+                    <td>${appointment.submitDate}</td>
+                    <td>
+                        <a href="/send-ticket" class="btn btn-primary btn-sm" style="text-transform: uppercase; font-weight: bold; margin-top: 5px">
+                            Send Ticket
+                        </a>
+                    </td>
+                </tr>
+            `;
+                tableBody.innerHTML += row;
+            });
+        }
+    }
+
 </script>
 
 <script async defer th:src="@{https://buttons.github.io/buttons.js}"></script>

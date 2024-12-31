@@ -1,9 +1,6 @@
 package org.example.unit22_project.Model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -20,12 +17,13 @@ public class DutyDate
 
     private LocalDate date;
 
-    @ManyToOne
-    @JoinColumn(name = "doctor_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "doctor_id", nullable = false )
+    @JsonIgnore
     private Doctor doctor;
 
-
     @OneToMany(mappedBy = "dutyDate", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<DutyTime> dutyTimes;
 
     public DutyDate(){}
