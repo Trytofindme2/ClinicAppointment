@@ -24,18 +24,21 @@ public interface AppointmentRepo extends JpaRepository<Appointment,Long>
 
     long countByDoctorId(long doctorId);
 
-    long countByStatusAndDoctorId(String status,Long doctorId);
-
     Optional<Appointment>findAppointmentById(Long appointmentId);
 
     List<Appointment>findAppointmentByPatientId(Long id);
 
-    @Query("SELECT a FROM Appointment a WHERE a.doctor.id = :doctorId AND (a.status = 'Pending' OR a.status = 'Accepted')")
+    void deleteAppointmentByPatientId(Long userId);
+
+
+    @Query("SELECT a FROM Appointment a WHERE a.doctor.id = :doctorId AND (a.status = 'Pending' OR a.status = 'Accepted' OR a.status = 'Successfully Send Ticket')")
     List<Appointment> findAppointmentByDoctorIdAndStatus(@Param("doctorId") Long doctorId);
 
     @Query("SELECT a FROM Appointment a " +
             "WHERE (a.doctor.name LIKE %:searchQuery% OR a.patient.name LIKE %:searchQuery%)")
     List<Appointment> findAppointmentsByDoctorOrPatientName(@Param("searchQuery") String searchQuery);
+
+
 
 
 

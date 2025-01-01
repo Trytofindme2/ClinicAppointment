@@ -5,15 +5,12 @@ import org.example.unit22_project.Model.*;
 import org.example.unit22_project.Service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.print.Doc;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
@@ -218,7 +215,7 @@ public class PatientController {
         return "redirect:/index/user/explore?doctorId=" + doctorId + "&returnMessage=" + returnMessage;
     }
 
-    @GetMapping("/History")
+    @GetMapping("/Ticket")
     public String getHistory(Model model,HttpSession httpSession){
         Long userId = (Long) httpSession.getAttribute("userId");
         if(userId!=null){
@@ -227,16 +224,40 @@ public class PatientController {
             if(appointmentList != null){
                 model.addAttribute("appointmentHistoryList",appointmentList);
             }
-//            else {
-//                model.addAttribute("appointmentHistoryList","No History To Show");
-//            }
+            else {
+                model.addAttribute("errorMessage", "No appointment found.");
+            }
+        } else {
+            model.addAttribute("isLogin", false);
+            model.addAttribute("errorMessage", "You must log in to view your appointment Ticket.");
+        }
+        return "MainPageAppointmentTicket";
+    }
+
+    @GetMapping("/History")
+    public String getAppointmentHistory(HttpSession httpSession,Model model)
+    {
+        Long userId = (Long) httpSession.getAttribute("userId");
+        if(userId != null){
+            model.addAttribute("isLogin",true);
+            List<AppointmentHistory> appointmentHistoryList = appointmentService.appointmentHistoryList(userId);
+            model.addAttribute("appointmentHistoryList",appointmentHistoryList);
         }
         else {
-            model.addAttribute("isLogin", false);
+            model.addAttribute("isLogin",false);
+            model.addAttribute("errorMessage", "You must log in to view your appointment Ticket.");
         }
         return "MainPageHistory";
     }
 
+
+    @GetMapping("/viewTicket")
+    public String getViewTicket(@RequestParam("appointmentId")Long appointmentId,
+                                Model model){
+       Appointment appointment = appointmentService.getAppointmentById(appointmentId).get();
+       model.addAttribute("appointment",appointment);
+       return "ViewTicket";
+    }
 
 
 

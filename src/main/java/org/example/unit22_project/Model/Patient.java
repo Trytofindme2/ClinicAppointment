@@ -22,6 +22,9 @@ public class Patient
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Appointment> appointments;
 
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<AppointmentHistory> appointmentHistories;
+
     public Patient(){}
 
     public Patient(Long id, String name, String email, String password, String reEnterPassword, boolean verified,String gender,String address) {

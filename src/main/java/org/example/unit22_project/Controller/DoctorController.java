@@ -101,7 +101,6 @@ public class DoctorController
             model.addAttribute("isLogIn",true);
             model.addAttribute("doctor",doctor);
             model.addAttribute("totalAppointmentCount",doctorService.getAppointmentCountByDoctorId(doctorId));
-            model.addAttribute("waitedAppointmentCount",doctorService.getAppointmentCountByStatusAndId("pending",doctorId));
             model.addAttribute("appointmentList",appointmentService.getAppointmentListByDoctorIdAndStatus(doctorId));
         }
         else {
@@ -110,12 +109,14 @@ public class DoctorController
         return "DoctorDashBoard";
     }
 
-    @GetMapping("/changeAppointmentStatusCheckOut")
-    public String changeAppointmentStatus(@RequestParam("appointmentId")Long appointmentId)
-    {
-        appointmentService.changeAppointmentStatus(appointmentId);
+    @GetMapping("/checkout")
+    public String checkoutProcess(@RequestParam("userId")Long userId,
+                                  @RequestParam("doctorId")Long doctorId,
+                                  @RequestParam("appointmentId")Long appointmentId){
+        appointmentService.DeleteAppointmentAndSaveToHistory(userId,doctorId,appointmentId);
         return "redirect:/index/doctor/DashBoard";
     }
+
 
     @GetMapping("/changeAppointmentStatusAccept")
     public String changeAppointmentStatusAccpet(@RequestParam("appointmentId")Long appointmentId){

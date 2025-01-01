@@ -176,8 +176,11 @@ public class DoctorService
     }
 
     public Long getAppointmentCountByStatusAndId(String status,Long doctorId) {
-        Long count = appointmentRepo.countByStatusAndDoctorId("Pending",doctorId);
-        return count != null ? count : 0L;
+        if(status.equals("Successfully Send Ticket") || status.equals("Pending")){
+            Long count = appointmentRepo.countByDoctorId(doctorId);
+            return count != null ? count : 0L;
+        }
+        return  0L;
     }
 
 

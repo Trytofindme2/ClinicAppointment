@@ -347,6 +347,40 @@ public class AdminController
     }
 
 
+    @GetMapping("/searchAppointmentHistory")
+    @ResponseBody
+    public List<AppointmentHistory> searchAppointmentsHistory(
+            @RequestParam(required = false) String searchQuery) {
+        if (searchQuery == null || searchQuery.isEmpty()) {
+            return appointmentService.getAllAppointmentHistory();
+        } else {
+            return appointmentService.findAppointmentHistory(searchQuery);
+        }
+    }
+    @GetMapping("/sendTicket")
+    public String sendTicketProcess(@RequestParam("appointmentId")Long appointmentId,
+                                    @RequestParam("appointmentStatus")String appointmentStatus,
+                                    Model model){
+        String message = appointmentService.sendTicketProcess(appointmentStatus,appointmentId);
+        System.out.println(message);
+        return "redirect:/index/admin/ManageAppointment";
+    }
+
+    @GetMapping("/History")
+    public String getAppointmentHistoryPage(HttpSession httpSession,Model model){
+        Long adminId = (Long) httpSession.getAttribute("id");
+        if(adminId != null){
+            model.addAttribute("isLogin",true);
+            model.addAttribute("admin",adminService.findAdminById(adminId));
+            model.addAttribute("appointmentList",appointmentService.getAllAppointmentHistory());
+        }
+        else {
+            model.addAttribute("isLogin",false);
+        }
+        return "AdminAppointmentHistory";
+    }
+
+
 
 
 

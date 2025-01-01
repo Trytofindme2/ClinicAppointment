@@ -1,8 +1,11 @@
 package org.example.unit22_project.Service;
 
+import jakarta.transaction.Transactional;
 import org.example.unit22_project.Model.Appointment;
+import org.example.unit22_project.Model.AppointmentHistory;
 import org.example.unit22_project.Model.Doctor;
 import org.example.unit22_project.Model.Patient;
+import org.example.unit22_project.Repository.AppointmentHistoryRepo;
 import org.example.unit22_project.Repository.AppointmentRepo;
 import org.example.unit22_project.Repository.DoctorRepo;
 import org.example.unit22_project.Repository.PatientRepo;
@@ -11,10 +14,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -23,6 +23,7 @@ public class AppointmentService
 {
     private final AppointmentRepo appointmentRepo;
     private final PatientRepo patientRepo;
+    private final AppointmentHistoryRepo appointmentHistoryRepo;
     private final DoctorRepo doctorRepo;
     private static final String PREFIX = "CTS";
     private final Set<String> generatedTickets = new HashSet<>();
@@ -30,10 +31,12 @@ public class AppointmentService
 
     public AppointmentService(AppointmentRepo appointmentRepo,
                               PatientRepo patientRepo,
-                              DoctorRepo doctorRepo){
+                              DoctorRepo doctorRepo,
+                              AppointmentHistoryRepo appointmentHistoryRepo){
         this.appointmentRepo = appointmentRepo;
         this.patientRepo = patientRepo;
         this.doctorRepo =doctorRepo;
+        this.appointmentHistoryRepo = appointmentHistoryRepo;
     }
 
     public boolean isAppointmentSlotAvailable(Long doctorId, LocalDate appointmentDate, LocalTime appointmentTime) {
@@ -64,7 +67,7 @@ public class AppointmentService
         appointment.setAppointmentTime(appointmentTime);
         appointment.setSubmitDate(submitDate);
         appointment.setStatus("Pending");
-        appointment.setAppointmentTicket(generateAppointmentTicket(appointment.getAppointmentDate()));
+        appointment.setAppointmentTicket(null);
         appointmentRepo.save(appointment);
         return "Appointment successfully booked! Please wait for the Admin response.";
     }
@@ -77,6 +80,17 @@ public class AppointmentService
         return appointmentRepo.findAppointmentsByDoctorOrPatientName(searchQuery);
     }
 
+    public List<AppointmentHistory> appointmentHistoryList(Long userId){
+        return appointmentHistoryRepo.findAppointmentHistoriesByPatientId(userId);
+    }
+
+    public List<AppointmentHistory>findAppointmentHistory(String searchQuery){
+        return appointmentHistoryRepo.findAppointmentHistoryByDoctorOrPatientName(searchQuery);
+    }
+
+    public Optional<Appointment>getAppointmentById(Long appointmentId){
+        return appointmentRepo.findAppointmentById(appointmentId);
+    }
     public List<Appointment>getAppointmentListByDoctorIdAndStatus(Long doctorId)
     {
         return appointmentRepo.findAppointmentByDoctorIdAndStatus(doctorId);
@@ -97,6 +111,46 @@ public class AppointmentService
         appointment.setStatus("Accepted");
         appointmentRepo.save(appointment);
     }
+
+    public List<AppointmentHistory> getAllAppointmentHistory(){
+        return appointmentHistoryRepo.findAll();
+    }
+
+    @Transactional
+    public void DeleteAppointmentAndSaveToHistory(Long userId,Long doctorId,Long appointmentId)
+    {
+        Patient patient = patientRepo.findPatientById(userId).get();
+        Doctor doctor = doctorRepo.findDoctorById(doctorId).get();
+        Appointment appointment = appointmentRepo.findAppointmentById(appointmentId).get();
+        AppointmentHistory appointmentHistory = new AppointmentHistory();
+        appointmentHistory.setPatient(patient);
+        appointmentHistory.setAppointmentId(appointmentId);
+        appointmentHistory.setDoctor(doctor);
+        appointmentHistory.setAppointmentDate(appointment.getAppointmentDate());
+        appointmentHistory.setAppointmentTime(appointment.getAppointmentTime());
+        appointmentHistory.setAppointmentTicket(appointment.getAppointmentTicket());
+        appointmentHistory.setStatus("Checked out");
+        appointmentHistory.setSubmitDate(appointment.getSubmitDate());
+        appointmentHistoryRepo.save(appointmentHistory);
+        appointmentRepo.deleteAppointmentByPatientId(userId);
+    }
+
+    public String sendTicketProcess(String appointmentStatus,Long appointmentId){
+        if(appointmentStatus.equals("Accepted")){
+            Appointment appointment = appointmentRepo.findAppointmentById(appointmentId).get();
+            appointment.setStatus("Successfully Send Ticket");
+            appointment.setAppointmentTicket(generateAppointmentTicket(appointment.getAppointmentDate()));
+            appointmentRepo.save(appointment);
+            return "Send Appointment Ticket To the Patient";
+        } else if (appointmentStatus.equals("Pending"))
+        {
+            return "Please wait for the Doctor Approved";
+        }
+        else {
+            return "Error Occurred";
+        }
+    }
+
 
 
 

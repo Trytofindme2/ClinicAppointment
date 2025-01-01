@@ -21,12 +21,38 @@
 </head>
 
 <style>
-    img.fixed-img {
+
+    table {
+        border-collapse: collapse;
         width: 100%;
-        height: 100px;
-        max-height: 400px;
-        object-fit: cover;
+        margin-top: 20px;
     }
+
+    thead {
+        background-color: #1B2C51;
+        color: whitesmoke;
+        text-transform: capitalize;
+        font-size: small;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: center;
+        border: 1px solid ghostwhite;
+    }
+
+    tbody tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .btn {
+        border-radius: 5px;
+        padding: 8px 15px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+</style>
 
 </style>
 
@@ -78,8 +104,8 @@
             <div class="navbar-nav ms-auto p-4 p-lg-0">
                 <a th:href="@{/index/user/CityStar}" class="nav-item nav-link">Home</a>
                 <a th:href="@{/index/user/AboutUs}" class="nav-item nav-link">About</a>
-                <a th:href="@{/index/user/Ticket}" class="nav-item nav-link">Ticket</a>
-                <a th:href="@{/index/user/getDoctorBySpec(spec='all')}" class="nav-item nav-link active">Doctors</a>
+                <a th:href="@{/index/user/Ticket}" class="nav-item nav-link active">Ticket</a>
+                <a th:href="@{/index/user/getDoctorBySpec(spec='all')}" class="nav-item nav-link">Doctors</a>
                 <a href="contact.html" class="nav-item nav-link">Contact</a>
             </div>
         </div>
@@ -107,43 +133,54 @@
 <div class="container-xxl py-5">
     <div class="container">
         <div class="text-center mx-auto mb-4 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
-            <p class="d-inline-block border rounded-pill py-1 px-4">Doctors</p>
-            <h1>Our Experienced Doctors</h1>
+            <p class="d-inline-block border rounded-pill py-1 px-4">Your Appointment</p>
+            <h1>Ticket</h1>
         </div>
 
-        <div class="row justify-content-center mb-5 wow fadeInUp">
-            <div class="col-md-6 d-flex align-items-center">
-                <div class="input-group me-3">
-                    <input type="text" class="form-control rounded-start-pill" id="doctorName" placeholder="Enter Doctor's name or Spec" />
-                    <button class="btn btn-primary rounded-end-pill" type="button" id="searchButton">Search</button>
-                </div>
 
-                <div class="input-group me-3">
-                    <input type="date" name="dutyDate" id="calendar" class="form-control rounded-start-pill">
-                    <button class="btn btn-primary rounded-end-pill" type="button" id="searchDate">Search</button>
-                </div>
 
+        <div class="row g-4">
+            <div class="table-responsive" th:if="${appointmentHistoryList != null && appointmentHistoryList.size() > 0}">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Your Name</th>
+                        <th>Doctor Name</th>
+                        <th>Doctor's Specialization</th>
+                        <th>Appointment Date</th>
+                        <th>Appointment Time</th>
+                        <th>Ticket</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="historyList : ${appointmentHistoryList}">
+                        <td th:text="${historyList.patient.name}"></td>
+                        <td th:text="${historyList.doctor.name}"></td>
+                        <td th:text="${historyList.doctor.doctorInfo.specialization}"></td>
+                        <td th:text="${historyList.appointmentDate} + '(' + ${historyList.appointmentDate.dayOfWeek} + ')'"></td>
+                        <td th:text="${#temporals.format(historyList.appointmentTime, 'hh:mm a')}"></td>
+                        <td>
+                            <a th:href="@{/index/user/viewTicket(appointmentId=${historyList.id})}" th:if="${historyList.status == 'Successfully Send Ticket'}"
+                               style="text-transform: capitalize; margin-top: 5px">
+                                View Ticket
+                            </a>
+
+                            <p th:if="${historyList.status == 'Accepted'}"
+                               style="text-transform: capitalize; margin-top: 5px">
+                                Ticket generation is in progress. Please wait.
+                            </p>
+
+                            <p th:if="${historyList.status == 'Pending'}"
+                               style="text-transform: capitalize; margin-top: 5px">
+                                Awaiting doctor's response. Please check back later.
+                            </p>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
-        </div>
-
-
-        <!-- Doctor Information Container -->
-        <div class="row g-4" id="doctor-info-container">
-            <!-- Initially display all doctors -->
-            <div th:each="doctor : ${doctorList}" class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                <div class="team-item position-relative rounded overflow-hidden shadow-sm">
-                    <div class="overflow-hidden">
-                        <img class="img-fluid fixed-img" th:src="@{/index/user/profilePhoto(doctorId=${doctor.id})}" alt="" style="width: 100%; height: 300px; object-fit: cover;">
-                    </div>
-                    <div class="team-text bg-light text-center p-4">
-                        <h5 class="mb-2" th:text="${doctor.name}" style="font-size: 1.1rem; font-weight: 600;"></h5>
-                        <p class="text-primary mb-3" th:text="${doctor.doctorInfo.specialization}" style="font-size: 0.9rem;"></p>
-                        <a style="margin-top: 15px" class="btn btn-outline-primary rounded-pill px-3 py-2"
-                           th:href="@{/index/user/explore(doctorId=${doctor.id})}">
-                            <i class="fa fa-search me-2"></i>Explore
-                        </a>
-                    </div>
-                </div>
+            <div style="background-color: #1B2C51; color:whitesmoke; margin-top: 35px" class="alert alert-warning text-center" th:if="${errorMessage != null}" role="alert">
+                <p style="margin-top: 15px" th:text="${errorMessage}"></p>
             </div>
         </div>
     </div>
@@ -205,139 +242,6 @@
         </div>
     </div>
 </div>
-`
-
-
-<script>
-    const baseUrl = "http://localhost:8080/index/user/getDoctorBySpec";
-    async function loadDoctors(spec = "all") {
-        try {
-            const url = spec === "all"
-                ? baseUrl + "?spec=all"
-                : `${baseUrl}?spec=${spec}`;
-            const response = await fetch(url);
-            const doctors = await response.json();
-
-            const doctorList = document.getElementById("doctor-list");
-            doctorList.innerHTML = "";
-            doctors.forEach(doctor => {
-                const doctorCard = `
-                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                        <div class="team-item position-relative rounded overflow-hidden shadow-sm">
-                            <div class="overflow-hidden">
-                                <img class="img-fluid fixed-img" src="/index/user/profilePhoto?doctorId=${doctor.id}" alt="" style="width: 100%; height: 300px; object-fit: cover;">
-                            </div>
-                            <div class="team-text bg-light text-center p-4">
-                                <h5 class="mb-2" style="font-size: 1.1rem; font-weight: 600;">${doctor.name}</h5>
-                                <p class="text-primary mb-3" style="font-size: 0.9rem;">${doctor.doctorInfo.specialization}</p>
-                                <a style="margin-top: 15px" class="btn btn-outline-primary rounded-pill px-3 py-2"
-                           href="/index/user/explore?doctorId=${doctor.id}">
-                            <i class="fa fa-search me-2"></i>Explore
-                        </a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                doctorContainer.innerHTML += doctorCard;
-            });
-        } catch (error) {
-            console.error("Error loading doctors:", error);
-        }
-    }
-    loadDoctors();
-
-    function searchDoctors() {
-        const query = document.getElementById("doctorName").value.trim();
-        if (query === "") {
-            loadDoctors("all");
-            return;
-        }
-
-        fetch(`http://localhost:8080/index/user/searchDoctors?query=${query}`)
-            .then(response => response.json())
-            .then(doctors => {
-                const doctorContainer = document.getElementById("doctor-info-container");
-                doctorContainer.innerHTML = "";
-                if (doctors.length === 0) {
-                    doctorContainer.innerHTML = "<p class='text-center'>No doctors found.</p>";
-                    return;
-                }
-                doctors.forEach(doctor => {
-                    const doctorCard = `
-                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                        <div class="team-item position-relative rounded overflow-hidden shadow-sm">
-                            <div class="overflow-hidden">
-                                <img class="img-fluid fixed-img" src="/index/user/profilePhoto?doctorId=${doctor.id}" alt="" style="width: 100%; height: 300px; object-fit: cover;">
-                            </div>
-                            <div class="team-text bg-light text-center p-4">
-                                <h5 class="mb-2" style="font-size: 1.1rem; font-weight: 600;">${doctor.name}</h5>
-                                <p class="text-primary mb-3" style="font-size: 0.9rem;">${doctor.doctorInfo.specialization}</p>
-                                <a style="margin-top: 15px" class="btn btn-outline-primary rounded-pill px-3 py-2"
-                           href="/index/user/explore?doctorId=${doctor.id}">
-                            <i class="fa fa-search me-2"></i>Explore
-                        </a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                    doctorContainer.innerHTML += doctorCard;
-                });
-            })
-            .catch(error => {
-                console.error("Error fetching doctors:", error);
-            });
-    }
-    document.getElementById("searchButton").addEventListener("click", searchDoctors);
-
-    document.getElementById("searchDate").addEventListener("click", function () {
-        const dutyDate = document.getElementById("calendar").value;
-        console.log(dutyDate)
-        if (dutyDate) {
-            searchDoctorsByDate(dutyDate);
-        } else {
-            searchDoctors();
-        }
-    });
-
-    function searchDoctorsByDate(dutyDate) {
-        fetch(`http://localhost:8080/index/user/getDoctorByDate?dutyDate=${dutyDate}`)
-            .then(response => response.json())
-            .then(doctors => {
-                const doctorContainer = document.getElementById("doctor-info-container");
-                doctorContainer.innerHTML = "";
-                if (doctors.length === 0) {
-                    doctorContainer.innerHTML = "<p class='text-center'>No doctors found for this date.</p>";
-                } else {
-                    doctors.forEach(doctor => {
-                        const doctorCard =`
-                    <div class="col-lg-3 col-md-6 wow fadeInUp" data-wow-delay="0.1s">
-                        <div class="team-item position-relative rounded overflow-hidden shadow-sm">
-                            <div class="overflow-hidden">
-                                <img class="img-fluid fixed-img" src="/index/user/profilePhoto?doctorId=${doctor.id}" alt="" style="width: 100%; height: 300px; object-fit: cover;">
-                            </div>
-                            <div class="team-text bg-light text-center p-4">
-                                <h5 class="mb-2" style="font-size: 1.1rem; font-weight: 600;">${doctor.name}</h5>
-                                <p class="text-primary mb-3" style="font-size: 0.9rem;">${doctor.doctorInfo.specialization}</p>
-                                <a style="margin-top: 15px" class="btn btn-outline-primary rounded-pill px-3 py-2"
-                           href="/index/user/explore?doctorId=${doctor.id}">
-                            <i class="fa fa-search me-2"></i>Explore
-                        </a>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                        doctorContainer.innerHTML += doctorCard;
-                    });
-                }
-            })
-            .catch(error => {
-                console.error("Error fetching doctors:", error);
-                alert("There was an error fetching doctors.");
-            });
-    }
-
-</script>
-
 
 <a href="#" class="btn btn-lg btn-primary btn-lg-square rounded-circle back-to-top"><i class="bi bi-arrow-up"></i></a>
 
@@ -353,8 +257,6 @@
 <script th:src="@{/lib/tempusdominus/js/moment.min.js}"></script>
 <script th:src="@{/lib/tempusdominus/js/moment-timezone.min.js}"></script>
 <script th:src="@{/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js}"></script>
-
-<!-- Template Javascript -->
 <script th:src="@{/js/main.js}"></script>
 </body>
 </html>
