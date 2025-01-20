@@ -12,9 +12,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.csrf(customizer -> customizer.disable());
         http.authorizeHttpRequests(request ->
-                request.requestMatchers("/index/admin/**").authenticated()
-                        .requestMatchers("/index/doctor/**").authenticated()
-                        .requestMatchers("/index/user/**").authenticated()
+                request.requestMatchers("/index/admin/**").permitAll()
+                        .requestMatchers("/index/doctor/**").permitAll()
+                        .requestMatchers("/index/user/**").permitAll()
                         .anyRequest().permitAll());
 
         http.formLogin(customizer ->

@@ -6,30 +6,23 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
-public class AppointmentHistory {
+public class AppointmentHistory
+{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
-
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
-
     private Long appointmentId;
     private LocalDate submitDate;
-
     private LocalDate appointmentDate;
-
     private LocalTime appointmentTime;
-
     private String status;
-
     private String appointmentTicket;
-
     public AppointmentHistory(){}
 
     public AppointmentHistory(Long id, Doctor doctor, Patient patient, Long appointmentId, LocalDate submitDate, LocalDate appointmentDate, LocalTime appointmentTime, String status, String appointmentTicket) {

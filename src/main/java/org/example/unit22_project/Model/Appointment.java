@@ -11,24 +11,16 @@ public class Appointment
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
     private Doctor doctor;
-
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
-
-
     private LocalDate submitDate;
-
     private LocalDate appointmentDate;
-
     private LocalTime appointmentTime;
-
     private String status;
-
     private String appointmentTicket;
 
     public Appointment(Long id, Doctor doctor,

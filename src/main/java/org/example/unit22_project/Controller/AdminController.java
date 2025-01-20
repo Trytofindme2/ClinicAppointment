@@ -357,6 +357,8 @@ public class AdminController
             return appointmentService.findAppointmentHistory(searchQuery);
         }
     }
+
+    
     @GetMapping("/sendTicket")
     public String sendTicketProcess(@RequestParam("appointmentId")Long appointmentId,
                                     @RequestParam("appointmentStatus")String appointmentStatus,

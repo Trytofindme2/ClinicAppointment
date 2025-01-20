@@ -56,7 +56,7 @@ public class DoctorService
         return doctorRepo.findDoctorByEmail(email).get();
     }
 
-    //find doctor by email
+    //check doctor by email
     public boolean findDoctorByEmail(String email){
         return doctorRepo.findDoctorByEmail(email).isPresent();
     }

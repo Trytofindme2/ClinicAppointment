@@ -12,5 +12,4 @@ public interface DoctorInfoRepo extends JpaRepository<DoctorInfo,Long>
 {
     Optional<DoctorInfo>findByDoctor_Id(Long id);
 
-
 }

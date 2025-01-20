@@ -18,14 +18,13 @@ public class Doctor
     private String password;
     private String reEnterPassword;
     private String gender;
-
     private boolean verified;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "doctor_info_id", referencedColumnName = "id")
     @JsonManagedReference
     private DoctorInfo doctorInfo;
-
+    
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<DutyDate> dutyDates;
